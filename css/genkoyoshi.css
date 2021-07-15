@@ -1,0 +1,445 @@
+.genko {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
+    justify-content: center;
+    width: fit-content;
+    /*gap: 1cm;*/
+    margin: 0 auto;
+}
+
+.genko-paper {
+    position: relative;
+    box-shadow: 5px 5px 50px 0px rgba(0,0,0,0.3);
+    background-color: white;
+    direction: ltr;
+    margin: 0.5cm;
+}
+.genko-input {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+}
+.genko-ime {
+    position: absolute;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    border: 1px solid #ddd;
+    padding: 4px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    border-radius: 4px;
+    background-color: white;
+    direction: ltr;
+    line-height: 1.2;
+    z-index: 1;
+    white-space: nowrap;
+}
+.genko-ime.hidden {
+    width: 1px;
+    height: 1px;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 1e-17;
+}
+.genko-ime.genko-ime-vertical {
+    writing-mode: vertical-rl;
+    direction: rtl;
+}
+
+
+/* Copybox */
+.copybox {
+    width: 1px;
+    height: 1px;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 1e-17;
+}
+
+.genko-caret {
+    position: absolute;
+    width: 2em;
+    height: 2px;
+    border-top: 2px solid black;
+    pointer-events: none;
+    animation: blink 1s linear infinite;
+    z-index: 1;
+}
+@keyframes blink {
+    0% {visibility: visible;}
+    50% {visibility: hidden;}
+    100% {visibility: hidden;}
+}
+.genko-caret.editing {
+    animation: none;
+}
+
+.genko-body {
+    position: relative;
+    border-width: 1mm;
+    border-style: solid;
+    margin: 1.5cm;
+    font-family: 'Yu Mincho';
+    font-size: 20pt;
+    line-height: 1.2;
+
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.genko-body .inner {
+    display: flex;
+    margin: 3px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.genko-body .char-row {
+    display: flex;
+}
+.genko-body .char-ruby {
+    padding: 0;
+    border-spacing: 0;
+    font-size: 0.5em;
+    vertical-align: middle;
+}
+.genko-body .char-ruby div {
+    width: 1.2em;
+    height: 2.4em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: clip;
+}
+.genko-body .char-body {
+    position: relative;
+    padding: 0;
+    border-spacing: 0;
+    vertical-align: middle;
+  	cursor: vertical-text;
+
+    border-left-width: 1px;
+    border-left-style: dotted;
+    border-right-width: 1px;
+    border-right-style: dotted;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+}
+
+/* Another way of border drawing for Safari and Firefox */
+.genko-paper.browser-safari .genko-body .char-body,
+.genko-paper.browser-firefox .genko-body .char-body {
+  border: none;
+}
+.genko-paper.browser-safari .genko-body .char-body div,
+.genko-paper.browser-firefox .genko-body .char-body div {
+  height: calc(1.2em + 1px);
+  width: calc(1.2em + 1px);
+}
+
+.genko-paper.browser-safari .genko-body .col-container:not(:first-child) .char-row:not(:last-child) .char-body,
+.genko-paper.browser-firefox .genko-body .col-container:not(:first-child) .char-row:not(:last-child) .char-body {
+  background-size: 2px 1px, 1px 2px;
+  background-position: bottom, top left;
+  background-repeat: repeat-x, repeat-y;
+}
+.genko-paper.browser-safari .genko-body .col-container:first-child .char-row:not(:last-child) .char-body,
+.genko-paper.browser-safari .genko-body .center-container + .col-container .char-row:not(:last-child) .char-body,
+.genko-paper.browser-firefox .genko-body .col-container:first-child .char-row:not(:last-child) .char-body,
+.genko-paper.browser-firefox .genko-body .center-container + .col-container .char-row:not(:last-child) .char-body {
+  background-size: 2px 1px;
+  background-position: bottom;
+  background-repeat: repeat-x;
+}
+.genko-paper.browser-safari .genko-body .col-container:not(:first-child) .char-row:last-child .char-body,
+.genko-paper.browser-firefox .genko-body .col-container:not(:first-child) .char-row:last-child .char-body {
+  background-size: 1px 2px, 1px 2px;
+  background-position: top left;
+  background-repeat: repeat-y, repeat-y;
+}
+.genko-paper.browser-safari .genko-body .col-container:first-child .char-row:last-child .char-body,
+.genko-paper.browser-safari .genko-body .center-container + .col-container .char-row:last-child .char-body,
+.genko-paper.browser-firefox .genko-body .col-container:first-child .char-row:last-child .char-body,
+.genko-paper.browser-firefox .genko-body .center-container + .col-container .char-row:last-child .char-body {
+  background: none !important;
+}
+.genko-paper.browser-safari .genko-body .col-container .char-row .char-ruby,
+.genko-paper.browser-firefox .genko-body .col-container .char-row .char-ruby {
+  background-size: 1px 2px;
+  background-position: top left;
+  background-repeat: repeat-y;
+}
+
+.genko-body .center-container + .col-container .char-body {
+    border-left: none;
+}
+
+.genko-paper .genko-body .char-row:last-child .char-body {
+    border-bottom: none;
+}
+
+.genko-paper .genko-body .col-container:first-child .char-body {
+    border-left: none;
+}
+
+/* Border coloring */
+.genko-body,
+.genko-body .inner,
+.genko-body .char-body,
+.genko-body .center-container {
+    border-color: var(--grid-color);
+}
+
+.genko-paper.browser-safari .genko-body .col-container:not(:first-child) .char-row:not(:last-child) .char-body {
+    background-image:
+        linear-gradient(to right, var(--grid-color), var(--grid-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-color) , var(--grid-color) 1px, transparent 1px);
+}
+.genko-paper.browser-safari .genko-body .col-container:first-child .char-row:not(:last-child) .char-body,
+.genko-paper.browser-safari .genko-body .center-container + .col-container .char-row:not(:last-child) .char-body {
+    background-image: linear-gradient(to right, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+}
+.genko-paper.browser-safari .genko-body .col-container:not(:first-child) .char-row:last-child .char-body {
+    background-image: linear-gradient(to bottom, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+}
+.genko-paper.browser-safari .genko-body .col-container .char-row .char-ruby {
+    background-image: linear-gradient(to bottom, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+}
+
+.genko-paper.browser-firefox .genko-body .col-container:not(:first-child) .char-row:not(:last-child) .char-body {
+    background-image:
+        linear-gradient(to right, var(--grid-color), var(--grid-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-color) , var(--grid-color) 1px, transparent 1px);
+}
+.genko-paper.browser-firefox .genko-body .col-container:first-child .char-row:not(:last-child) .char-body,
+.genko-paper.browser-firefox .genko-body .center-container + .col-container .char-row:not(:last-child) .char-body {
+    background-image: linear-gradient(to right, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+}
+.genko-paper.browser-firefox .genko-body .col-container:not(:first-child) .char-row:last-child .char-body {
+    background-image: linear-gradient(to bottom, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+}
+.genko-paper.browser-firefox .genko-body .col-container .char-row .char-ruby {
+    background-image: linear-gradient(to bottom, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+}
+
+/* Text selection */
+.genko-body .char-body div.selected {
+    background-color: Highlight;
+    background-clip: border-box;
+    color: HighlightText;
+}
+
+/* Cells */
+.genko-body .char-body div {
+    height: 1.2em;
+    width: 1.2em;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    text-align: center;
+    white-space: nowrap;
+  	line-height: 1.2;
+}
+
+.genko-paper.sideways-roman .genko-body .char-body div {
+    text-orientation: mixed;
+}
+
+/* Center separator and the Gyobi */
+.genko-body .center-container {
+    position: relative;
+    border-width: 0 1px;
+    border-style: solid;
+}
+
+.genko-body .center-separator-block {
+    display: grid;
+    width: 1.2em;
+    height: 100%;
+    justify-content: center;
+    grid-template-columns: auto;
+    grid-template-rows: 1fr auto 3fr auto 2fr;
+    grid-template-areas: 
+        "..."
+        "top"
+        "..."
+        "bottom"
+        "...";
+}
+
+/* Tweak for Safari */
+.genko-paper.browser-safari .genko-body .center-container {
+    min-width: calc(1.2em + 1px);
+}
+.genko-paper.browser-safari .genko-body .center-separator-block {
+    position: absolute;
+    left: -1px;
+}
+@media print {
+    .genko-paper.browser-safari .genko-body .center-separator-block {
+        position: absolute;
+        left: 0;
+    }
+}
+
+.gyobi-top {
+    grid-area: top;
+}
+.gyobi-top svg {
+    width: 1.2em;
+    height: 1.2em;
+    fill: var(--grid-color);
+}
+.gyobi-bottom {
+    grid-area: bottom;
+}
+.gyobi-bottom svg {
+    width: 1.2em;
+    height: 1.2em;
+    fill: var(--grid-color);
+}
+
+@media screen {
+    /* Newline */
+    .genko-paper.newline-visible .newline:before {
+        content: url("../img/newline.svg");
+        display: block;
+        opacity: 0.3;
+        width: 0.6em;
+        height: 0.6em;
+        margin-top: 0.3em;
+    }
+    .genko-paper.newline-visible .newline-after:after {
+        content: url("../img/newline.svg");
+        display: inline-block;
+        height: 0.6em;
+        overflow: visible;
+        opacity: 0.3;
+    }
+    .genko-paper.newline-visible .ascii-combined.chrome.newline-after:after {
+        display: block;
+        position: absolute;
+        left: 1em;
+        transform: rotate(-90deg);
+        margin-top: 0.3em;
+    }
+
+    /* Half-width space */
+    .genko-paper.sideways-roman.hw-space-visible .hw-space.before:before {
+        content: url("../img/hw-space-h.svg");
+        display: inline-block;
+        opacity: 0.3;
+        height: 0.5em;
+    }
+    .genko-paper.sideways-roman.hw-space-visible .hw-space.after:after {
+        content: url("../img/hw-space-h.svg");
+        display: inline-block;
+        opacity: 0.3;
+        height: 0.5em;
+    }
+    .genko-paper.hw-space-visible .hw-space.single:before {
+        content: url("../img/hw-space-v.svg");
+        display: inline-block;
+        opacity: 0.3;
+        height: 1em;
+    }
+
+    /* Full-width space */
+    .genko-paper.fw-space-visible .fw-space:before {
+        content: "\25a1";
+        color: rgba(0,0,0,0.3);
+    }
+}
+
+.genko-paper.sideways-roman .hw-space.before:before {
+    content: "\2002";
+}
+.genko-paper.sideways-roman .hw-space.after:after {
+    content: "\2002";
+}
+
+.odd-space:after {
+    content: "\2002";
+    -webkit-text-combine: horizontal;
+    display: inline-block;
+    height: 0.5em;
+}
+
+.number-combined {
+    -webkit-text-combine: horizontal;
+    -ms-text-combine-horizontal: all;
+    text-combine-upright: all;
+}
+.sign-combined {
+    letter-spacing: -0.5em;
+    /*font-feature-settings: "vpal" 1;*/
+}
+.char-combined {
+    letter-spacing: -0.05em;
+}
+.char-combined span {
+    letter-spacing: -0.4em;
+}
+.ascii-combined.chrome {
+    -webkit-text-combine: horizontal;
+    -ms-text-combine-horizontal: all;
+    text-combine-upright: all;
+    transform: rotate(90deg);
+}
+.ascii-combined.hw-space {
+    transform: none;
+    -webkit-text-combine: none;
+    text-combine-upright: none;
+}
+
+.genko-body .char-body .test-tip {
+    position: absolute;
+    background-color: #dd8;
+    z-index: 999;
+    font-size: 0.5em;
+    width: 100%;
+    bottom: 0px;
+    writing-mode: horizontal-tb;
+    display: none;
+}
+
+@media print {
+    .genko {
+        display: block;
+        direction: rtl;
+        text-align: center;
+    }
+    
+    .genko-paper {
+        display: inline-block;
+        margin: 0;
+    }
+
+    .genko-paper.blank {
+        display: none;
+    }
+
+    .genko-caret {
+        display: none;
+    }
+    .genko-ime {
+        display: none !important;
+    }
+
+    .genko-paper.newline-visible .newline::before,
+    .genko-paper.newline-visible .newline-after::after,
+    .genko-paper.hw-space-visible .hw-space.single:before,
+    .genko-paper.fw-space-visible .fw-space:before {
+        display: none;
+    }
+
+    .genko-paper.hw-space-visible .hw-space.before:before,
+    .genko-paper.hw-space-visible .hw-space.after:after {
+        content: "\2002";
+        display: inline-block;
+    }
+}

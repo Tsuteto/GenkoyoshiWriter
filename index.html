@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-dpi, initial-scale=1"/>
+        <title>原稿用紙ライター</title>
+        <link href="lib/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="lib/fa/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+        <link href="css/genkoyoshi.css" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/css?family=Noto+Serif+JP&display=swap" rel="stylesheet">
+        <link href="css/fonts.css" rel="stylesheet" type="text/css"/>
+        <link href="css/index.css" rel="stylesheet" type="text/css"/>
+
+        <script src="lib/unistring.js"></script>
+        <script src="lib/jquery-3.3.1.min.js"></script>
+        <script src="lib/bootstrap.bundle.min.js"></script>
+        <script src="lib/html2canvas.min.js"></script>
+        <script type="module" src="js/app.js"></script>
+    </head>
+
+    <body>
+        <div class="bg-desktop"></div>
+        <div class="bg-shade"></div>
+        <div class="bg-lighting"></div>
+        <header>原稿用紙ライター <span class="tc">Ver.</span>１・０・０</header>
+
+        <div class="genko"></div>
+
+        <!-- 設定タブ -->
+        <div id="controlPane" class="drawer">
+            <div class="drawer-container drawer-header"><div class="drawer-title">設定</div></div>
+            <div class="drawer-container">
+                <div class="drawer-accordion-box">
+                    <div id="settings-content" class="drawer-contents">
+                    <div class="drawer-item ">
+                        <div class="btn-group size-preset">
+                            <button id="size-20x20" class="btn btn-outline-secondary">400字詰</button>
+                            <button id="size-20x10" class="btn btn-outline-secondary">200字詰</button>
+                            <button id="size-14x10" class="btn btn-outline-secondary">140字詰</button>
+                            <button id="size-8x7" class="btn btn-outline-secondary">56字詰</button>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="input-group">
+                            <div class="input-group-prepend input-group-header">
+                                <span class="input-group-text">ます数</span>
+                            </div>
+                            <input type="number" id="cols" class="form-control" size="3" placeholder="縦" />
+                            <div class="input-group-prepend input-group-append">
+                                <span class="input-group-text">×</span>
+                            </div>
+                            <input type="number" id="rows" class="form-control" size="3" placeholder="横"/>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="card">
+                            <div class="row no-gutters">
+                                <div class="col-0 card-horizontal-header">
+                                    罫線色
+                                </div>
+                                <div id="colorPalette" class="col card-horizontal-body"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="input-group">
+                            <div class="input-group-prepend input-group-header">
+                                <span class="input-group-text">字体&nbsp;<i class="fa fa-info-circle info-icon" data-toggle="tooltip" title="お使いのパソコンにインストールされているフォントのみ反映されます（Noto Serifを除く）"></i></span>
+                            </div>
+                            <select id="font" class="form-control custom-select">
+                                <optgroup label="明朝体">
+                                    <option value="YuMin">游明朝体</option>
+                                    <option value="YuMin_36pKn">游明朝体+36ポかな</option>
+                                    <option value="HiraginoMin">ヒラギノ明朝</option>
+                                    <option value="BIZUDMin">BIZ UD明朝</option>
+                                    <option value="BunkyuMin">凸版文久明朝</option>
+                                    <option value="KozukaMin">小塚明朝</option>
+                                    <option value="NotoSerif">Noto Serif（源ノ明朝）</option>
+                                    <option value="HGMin">HG明朝</option>
+                                    <option value="HeiseiMin">平成明朝</option>
+                                    <option value="MSMin">MS 明朝</option>
+                                </optgroup>
+                                <optgroup label="教科書体">
+                                    <option value="UDKyo">UDデジタル教科書体</option>
+                                    <option value="HGKyo">HGP教科書体</option>
+                                    <option value="YuKyo">游教科書体</option>
+                                    <option value="Klee">クレー</option>
+                                </optgroup>
+                                <optgroup label="その他">
+                                    <option value="HGGyo">HGP行書体</option>
+                                    <option value="ArisawaKai">有澤楷書</option>
+                                    <option value="TsukushiARGo">筑紫A丸ゴシック</option>
+                                    <option value="TsukushiBRGo">筑紫B丸ゴシック</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="input-group">
+                            <div class="input-group-prepend input-group-header">
+                                <span class="input-group-text">欧文字体</span>
+                            </div>
+                            <select id="fontRoman" class="form-control custom-select">
+                                <option value="">(上に同じ)</option>
+                                <optgroup label="Serif">
+                                    <option value="Times">Times</option>
+                                    <option value="Century">Century</option>
+                                    <option value="Palatino">Palatino</option>
+                                    <option value="Garamond">Garamond</option>
+                                    <option value="Bookman">Bookman</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Lucida">Lucida</option>
+                                </optgroup>
+                                <optgroup label="Slab Serif">
+                                    <option value="Rockwell">Rockwell</option>
+                                    <option value="Courier">Courier</option>
+                                    <option value="Typewriter">Typewriter</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="input-group">
+                            <div class="input-group-prepend input-group-header">
+                                <span class="input-group-text">背景</span>
+                            </div>
+                            <select id="wallpaper" class="form-control custom-select"></select>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="input-group">
+                            <div class="input-group-prepend input-group-header">
+                                <span class="input-group-text">電光色</span>
+                            </div>
+                            <input type="range" id="lightColor" class="form-control custom-range" id="lightColor" value="1" step="any" min="0" max="1"/>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="card">
+                            <div class="row no-gutters">
+                                <div class="col-0 card-horizontal-header">
+                                    表示
+                                </div>
+                                <div class="col card-horizontal-body">
+                                    <div class="input-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="newlineVisible" class="custom-control-input cell-option-toggle"/>
+                                            <label for="newlineVisible" class="custom-control-label">改行位置<span class="sample-newline">&#x21b5;</span>を表示する</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="halfwidthSpaceVisible" class="custom-control-input cell-option-toggle"/>
+                                            <label for="halfwidthSpaceVisible" class="custom-control-label">半角空白<span class="sample-halfwidth-space">&#x2423;</span>を表示する</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="fullwidthSpaceVisible" class="custom-control-input cell-option-toggle"/>
+                                            <label for="fullwidthSpaceVisible" class="custom-control-label">全角空白<span class="sample-fullwidth-space">&#x25a1;</span>を表示する</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="verticalImeInput" class="custom-control-input cell-option-toggle"/>
+                                            <label for="verticalImeInput" class="custom-control-label">IME入力を縦書きにする</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="card">
+                            <div class="row no-gutters">
+                                <div class="col-0 card-horizontal-header">
+                                    文字組み
+                                </div>
+                                <div class="col card-horizontal-body">
+                                    <div class="input-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="combineEndOfLine" class="custom-control-input cell-option-toggle"/>
+                                            <label for="combineEndOfLine" class="custom-control-label">行末の禁則処理</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="combineEndBracket" class="custom-control-input cell-option-toggle"/>
+                                            <label for="combineEndBracket" class="custom-control-label">句読点＋括弧の文字詰め</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="tatechuyoko" class="custom-control-input cell-option-toggle"/>
+                                            <label for="tatechuyoko" class="custom-control-label">半角数字の縦中横</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="sidewaysRoman" class="custom-control-input cell-option-toggle"/>
+                                            <label for="sidewaysRoman" class="custom-control-label">半角欧文の横書き</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" id="combineRomanSentence" class="custom-control-input cell-option-toggle"/>
+                                            <label for="combineRomanSentence" class="custom-control-label">半角欧文の詰め書き</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="drawer-item align-right">
+                        <button id="clearBtn" class="btn btn-outline-secondary"><i class="fa fa-trash"></i>&nbsp;テキストの消去…</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- 共有タブ -->
+        <div id="sharePane" class="drawer">
+            <div class="drawer-container drawer-header"><div class="drawer-title">共有</div></div>
+            <div class="drawer-container">
+                <div class="drawer-accordion-box">
+                    <div id="share-content" class="drawer-contents">
+                        <!--<div class="drawer-item">
+                            <button id="share-twitter" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-twitter fa-2x"></i></div>Twitter</button>
+                        </div>-->
+                        <div class="drawer-item">
+                            <button id="export-image" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-picture-o fa-2x"></i></div>画像として出力</button>
+                        </div>
+                        <div class="drawer-item">
+                            <button id="export-text" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-file-text fa-2x"></i></div>テキストファイルとして出力</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 共有タブ -->
+        <div id="guidePane" class="drawer">
+            <div class="drawer-container drawer-header"><div class="drawer-title">説明書</div></div>
+            <div class="drawer-container">
+                <div class="drawer-accordion-box">
+                    <div id="guide-content" class="drawer-contents">
+                        <h1>原稿用紙ライター説明書</h1>
+                        <article>
+                            <p>『原稿用紙ライター』は原稿用紙の見た目を模したテキストエディタです。ウェブブラウザにおける縦書きの実験作であり〝ネタアプリ〟です。原稿用紙の書き方に則って文字組みやぶら下がり禁則処理あたりも真面目に取り組んでみた一方、挙動にはツメの甘さがありますがご容赦ください。</p>
+                        </article>
+                        <article>
+                            <h2>対応ブラウザ</h2>
+                            <ul><li>Google Chrome 61以降</li><li>Firefox 60以降</li><li>Safari Mac版10.1以降、iPad版10.3以降　※画像出力未対応</li><li>Edge 16以降</li></ul>
+                        </article>
+                        <article>
+                            <h2>テキストの入力機能</h2>
+                            <p>かなり独自実装を強いられているため、次に列挙する最低限の操作ができるのみとなっています。</p>
+                            <p>漢字変換入力およびバックスペースによる文字削除、文字列範囲選択、選択範囲の削除およびコピー（Ctrl+C）もしくは切り取り（Ctrl+X）そして貼り付け（Ctrl+V）、全選択（Ctrl+A）、操作の取り消し（Ctrl+Z）とやり直し（Ctrl+Y）……くらいです。Macの場合は⌘に読み替えますが、操作のやり直しは⌘+Shift+Zです。</p>
+                        </article>
+                        <article>
+                            <h2>テキストの保存</h2>
+                            <p>保存は５分ごと、もしくはタブやウィンドウの画面を閉じた時に入力中の状態が<u>ブラウザ内に自動保存されます</u>。次に同じブラウザでこの画面を開いた際に前の状態から再開できます。</p>
+                            <p>注意として、他にこの画面を開いているタブがないことを確認してください。複数のタブでこの画面が開いているとそれぞれで保存内容を書き換え合ってしまいます。</p>
+                            <p>他の文書を作成したい場合は共有タブの『テキストファイルとして出力』を行ってから、削除して新たな文書を入力してください。</p>
+                        </article>
+                        <article>
+                            <h2>フォントについて</h2>
+                            <p>設定タブで設定できるフォントは、後述の例外を除きパソコンにインストールされているものを参照します。したがって、存在しないフォントを選択しても反映されないので注意してください（Windowsの場合『游明朝体』、Mac/iPadの場合『ヒラギノ明朝』になります）。</p>
+                            <p>『Noto Serif（源ノ明朝）』についてはGoogle Fontsを参照しているためインストール不要です。</p>
+                        </article>
+                        <article>
+                            <h2>印刷について</h2>
+                            <p>調整してブラウザの印刷機能に対応してみたものの、反映されるのはChromeのみでそれ以外のブラウザは設定を無視するようです……。用紙については４００字詰と２００字詰のみ調整してあります。</p>
+                        </article>
+                        <article>
+                            <h2>文字組みについて</h2>
+                            <p>文字組み設定は文書全体の設定のみで、部分の適用には対応していません。しかし、『半角数字の縦中横』や『半角欧文の横書き』、『半角欧文の詰め書き』は<u>全角文字</u>を用いることで制御できます。</p>
+                        </article>
+                        <article>
+                            <h2>画像として出力</h2>
+                            <p>原稿が複数枚ある場合は縦一列に並んだ形で１枚の画像に出力されます。数枚程度の出力が最適です。枚数が大量の場合は罫線の表示がおかしくなる他、ブラウザにより画像サイズの限界があります。必要な場合は印刷機能よりＰＤＦの出力をお勧めします。</p>
+                            <p>残念ながらSafariは機能が不十分のためうまく出力できません（文字が縦書きにならない……）。</p>
+                        </article>
+                        <article>
+                            <h2>ルビ</h2>
+                            <p>ルビの入力・編集には対応していません……。ルビ振りの簡単な操作が思いつかない😭</p>
+                        </article>
+                        <article>
+                            <h2>入力された文章について</h2>
+                            <p>現在すべての処理はブラウザ内で完結しており、入力された文章がサーバーに送信されることはありません。</p>
+                            <p>ただ将来、ユーザーに確認した上で文章の画像をサーバーに送信しツイッターへの投稿を行う『ツイッター共有機能』を実装したいという夢はあります。</p>
+                        </article>
+                        <article>
+                            <h2>処理が重い</h2>
+                            <p>残念な実装のために４００字詰十枚を超えてくると重くなってしまいます（特に文書最初の方を編集する時）。まだ小説を書くのには不向きでしょう。。</p>
+                        </article>
+                        <article>
+                            <h2>謝辞</h2>
+                            <p>背景の壁紙および紙のテクスチャは次の素材サイトのものを使用させて頂いてます。</p>
+                            <ul>
+                                <li><a href="https://www.beiz.jp/" target="_blank">BEIZ images</a></li>
+                                <li><a href="https://www.subtlepatterns.com/" target="_blank">Toptal Subtle Patterns</a></li>
+                                <li><a href="http://free-paper-texture.com/" target="_blank">Paper-co</a></li>
+                                <li><a href="http://www.pixeden.com/" target="_blank">Pixeden.com</a></li>
+                            </ul>
+                            <p>Unicodeのサロゲートや異体字セレクタ、合字もろもろ難しいやつを処理するために使用させて頂いてます。</p>
+                            <ul>
+                                <li>akahuku様の<a href="https://github.com/akahuku/unistring" target="_blank">Unistring</a></li>
+                            </ul>
+                            <p>画像ファイル生成のために使用させて頂いてます。</p>
+                            <ul>
+                                <li>Niklas von Hertzen様の<br/><a href="https://html2canvas.hertzen.com/" target="_blank">html2canvas</a></li>
+                            </ul>
+                            <p>日本語表示補助のために次のフォントを導入させて頂いてます。</p>
+                            <ul>
+                                <li>wakufactory様の<a href="https://wakufactory.jp/densho/font/hentai/" target="_blank">Unicode変体仮名フォント</a></li>
+                            </ul>
+                        </article>
+                        <article>
+                            <h2>作者</h2>
+                            <p>つてと　(<a href="https://twitter.com/tsuteto" target="_blank">@tsuteto</a>)</p>
+                            <p>なにかあったらこちらまで。</p>
+                        </article>
+                        <article>
+                            <h2>更新履歴</h2>
+                            <h3>１・０・０ ― <span class="tc">’21</span>年７月<span class="tc">15</span>日</h3>
+                            <p>初リリース</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右下ボタン -->
+        <div class="right-down-control-pane">
+            <div id="undoBtn" class="btn btn-desktop btn-desktop-label4" data-label="取り消す"><i class="fa fa-undo"></i></div>
+            <div id="redoBtn" class="btn btn-desktop btn-desktop-label4" data-label="やり直す"><i class="fa fa-undo fa-flip-horizontal"></i></div>
+            <div id="fullscreenBtn" class="btn btn-desktop btn-desktop-label5" data-label="全画面表示">
+                <span class="fa-stack">
+                    <i class="fa fa-square-o fa-stack-2x"></i>
+                    <i class="fa fa-expand fa-stack-1x"></i>
+                </span>
+            </div>
+            <div id="printBtn" class="btn btn-desktop" data-label="印刷"><i class="fa fa-print"></i></div>
+        </div>
+
+        <!-- テキスト出力ダイアログ -->
+        <div id="dialog-export" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">テキストファイル出力</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">ファイル名</span>
+                            </div>
+                            <input type="text" id="export-filename" class="form-control" value="無題.txt">
+                        </div>
+                        <p class="note">※ファイルはブラウザで設定されたダウンロードフォルダに保存されます。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-cancel" data-dismiss="modal">キャンセル</button>
+                        <button type="button" class="btn btn-primary btn-okay">出力</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dialog-export-image" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">原稿画像出力</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>出力する方法を選んでください。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-cancel" data-dismiss="modal">キャンセル</button>
+                        <button type="button" class="btn btn-primary btn-each">ページごと1ファイル</button>
+                        <button type="button" class="btn btn-primary btn-whole">全体で1ファイル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,185 @@
+
+@font-face {
+    font-family: gk-HentaiganaMincho;
+    font-weight: normal;
+    src: local("UniHentaiKana-Regular"),
+         local("IPAmjMincho"),
+         local("HanaMinA"),
+         url(../fonts/UniHentaiKana-Regular.otf);
+    unicode-range: U+3099,U+309A,U+1B000-1B11F;
+}
+
+@font-face {
+  font-family: gk-YuMincho;
+  font-weight: normal;
+  src: local("Yu Mincho Regular"),
+       local("YuMincho-Regular");
+}
+
+@font-face {
+    font-family: gk-HiraginoMincho;
+    font-weight: normal;
+    src: local("Hiragino Mincho ProN"),
+         local("ヒラギノ明朝 ProN W3"),
+         local("Hiragino Mincho Pro");
+}
+
+@font-face {
+    font-family: gk-BIZUDMincho;
+    font-weight: normal;
+    src: local("BIZ UDMincho Medium");
+}
+
+@font-face {
+    font-family: gk-MSMincho;
+    font-weight: normal;
+    src: local("MS Mincho"),
+         local("ＭＳ 明朝");
+}
+
+@font-face {
+    font-family: gk-HGMincho;
+    font-weight: normal;
+    src: local("HG明朝");
+}
+
+@font-face {
+    font-family: gk-HGKaisho;
+    font-weight: normal;
+    src: local("HG楷書体");
+}
+
+@font-face {
+    font-family: gk-KozukaMincho;
+    font-weight: normal;
+    src: local("KozMinPr6N Regular"), local("Kozuka Mincho Pr6N Regular"),
+         local("Kozuka Mincho Pro Regular"),
+         local("小塚明朝 Pr6N Regular");
+}
+
+@font-face {
+    font-family: gk-HGKyokasho;
+    font-weight: normal;
+    src: local("HG教科書体");
+}
+
+@font-face {
+    font-family: gk-HeiseiMincho;
+    font-weight: normal;
+    src: local("平成明朝"),
+         local("HG平成明朝体W3");
+}
+
+@font-face {
+    font-family: gk-ArisawaKaisho;
+    font-weight: normal;
+    src: local("有澤楷書");
+}
+
+/* Noto Serif JP is embedded by Google fonts */
+
+@font-face {
+    font-family: gk-UDKyokasho;
+    font-weight: normal;
+    src: local("UD Digi Kyokasho N-R");
+}
+
+@font-face {
+    font-family: gk-YuKyokasho;
+    font-weight: normal;
+    src: local("YuKyo"),
+         local("YuKyokasho"),
+         local("Yu Kyokasho");
+}
+
+@font-face {
+    font-family: gk-TsukushiAGothic;
+    font-weight: normal;
+    src: local("TsukuARdGothic");
+}
+
+@font-face {
+    font-family: gk-TsukushiBGothic;
+    font-weight: normal;
+    src: local("TsukuBRdGothic");
+}
+
+@font-face {
+    font-family: gk-BunkyuMincho;
+    font-weight: normal;
+    src: local("Toppan Bunkyu Mincho");
+}
+
+@font-face {
+    font-family: gk-YuMin_36pKn;
+    font-weight: normal;
+    src: local("YuMin_36pKn"),
+         local("YuMincho +36p Kana");
+}
+
+@font-face {
+    font-family: gk-Klee;
+    font-weight: normal;
+    src: local("Klee");
+}
+
+
+@font-face {
+    font-family: gk-Times;
+    src: local("Times"), local("Times New Roman");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Century;
+    src: local("Century"), local("Century Schoolbook");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Garamond;
+    src: local("Garamond");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Palatino;
+    src: local("Palatino");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Lucida;
+    src: local("Lucida Serif"), local("Lucida Bright");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Rockwell;
+    src: local("Rockwell");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Bookman;
+    src: local("Bookman"), local("Bookman old style");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Georgia;
+    src: local("Georgia Pro"), local("Georgia");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Typewriter;
+    src: local("American Typewriter");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
+
+@font-face {
+    font-family: gk-Courier;
+    src: local("Courier New"), local("Courier");
+    unicode-range: U+00-52F, U+1E00-1FFF;
+}
