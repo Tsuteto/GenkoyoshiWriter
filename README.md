@@ -31,5 +31,5 @@ As background wallpaper or paper texture
 ## License
 MIT License
 
-# Acknowledgement
+# Acknowledgments
 See the manual on the app from the link above.
