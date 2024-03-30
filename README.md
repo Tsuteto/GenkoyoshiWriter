@@ -14,7 +14,7 @@
 - Edge
 ## Dependencies
 ### JS Libraries
-- Unistring - https://github.com/akahuku/unistring
+- unistring.js - https://github.com/akahuku/unistring
 - html2canvas - https://html2canvas.hertzen.com/
 - Bootstrap 4.1.3
 - jQuery 3.3.1
@@ -30,5 +30,6 @@ As background wallpaper or paper texture
 - Pixeden.com - Subtle Paper Tile Pattern Vol2 - http://www.pixeden.com/graphic-web-backgrounds/subtle-paper-tile-pattern-vol2
 ## License
 MIT License
-## Acknowledgement
+
+# Acknowledgments
 See the manual on the app from the link above.
