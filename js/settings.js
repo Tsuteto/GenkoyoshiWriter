@@ -14,10 +14,15 @@ export class Settings {
         this.$lightColorRange = this.$body.find("#lightColor");
         this.$colorPalette = this.$body.find("#colorPalette");
         this.$wallpaper = this.$body.find("#wallpaper");
+        this.$selectionStyle = {
+            default: this.$body.find("#selectionStyleDefault"),
+            marker: this.$body.find("#selectionStyleMarker")
+        };
 
         this.params = {
             lightColor: 1,
-            wallpaper: "cover-wood1"
+            wallpaper: "cover-wood1",
+            selectionStyle: GenkoYoshi.SELECTION_STYLE.default,
         };
     }
 
@@ -27,7 +32,8 @@ export class Settings {
             cols: this.genko.colSize,
             cellOptions: this.genko.cellOptions,
             lightColor: this.params.lightColor,
-            wallpaper: this.params.wallpaper
+            wallpaper: this.params.wallpaper,
+            selectionStyle: this.genko.selectionStyle
         };
 
         this.$body.find("#size-20x20").click(e => this.onSizeChanged(20, 20));
@@ -69,6 +75,17 @@ export class Settings {
         this.main.setLightColor(this.params.lightColor);
         this.main.setWallpaper(this.params.wallpaper);
 
+        for (let key in GenkoYoshi.SELECTION_STYLE) {
+            let style = GenkoYoshi.SELECTION_STYLE[key];
+            $("<button class='btn btn-outline-secondary'>")
+                .append($("<div class='color-indicator'>").css("background-color", style.color))
+                .toggleClass("active", style.color === this.genko.selectionStyle.color
+                        && style.type === this.genko.selectionStyle.type)
+                .data("style", style)
+                .click(this.onSelectionStyleChanged.bind(this))
+                .appendTo(this.$selectionStyle[style.type])
+        }
+
         return this;
     }
 
@@ -99,14 +116,14 @@ export class Settings {
     }
 
     onCellOptionToggled(e) {
-        var checked = $(e.target).is(":checked");
-        var name = $(e.target).attr("id");
+        let checked = $(e.target).is(":checked");
+        let name = $(e.target).attr("id");
         this.params.cellOptions[name] = checked;
         this.genko.setCellOption(name, checked);
     }
 
     onColorChanged(e) {
-        var color = $(e.target).data("color");
+        let color = $(e.target).data("color");
         this.genko.setColor(color);
         this.$colorPalette.find(".btn").each((i, btn) => {
             $(btn).toggleClass("active", $(btn).data("color") == color);
@@ -122,15 +139,23 @@ export class Settings {
     }
 
     onWallpaperChanged(e) {
-        var nextVal = $(e.target).val();
+        let nextVal = $(e.target).val();
         this.main.setWallpaper(nextVal);
         this.params.wallpaper = nextVal;
     }
 
     onLightColorChanged(e) {
-        var nextVal = $(e.target).val();
+        let nextVal = $(e.target).val();
         this.main.setLightColor(nextVal);
         this.params.lightColor = nextVal;
+    }
+
+    onSelectionStyleChanged(e) {
+        let style = $(e.target).data("style");
+        this.genko.setSelectionStyle(style);
+        $("#selectionStyle").find(".btn").each((i, btn) => {
+            $(btn).toggleClass("active", $(btn).data("style") === style);
+        });
     }
 
     onClearClicked(e) {

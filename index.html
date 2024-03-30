@@ -23,7 +23,7 @@
         <div class="bg-desktop"></div>
         <div class="bg-shade"></div>
         <div class="bg-lighting"></div>
-        <header>原稿用紙ライター <span class="tc">Ver.</span>１・０・０</header>
+        <header>原稿用紙ライター <span class="tc">Ver.</span>１・１・０</header>
 
         <div class="genko"></div>
 
@@ -79,7 +79,7 @@
                                     <option value="NotoSerif">Noto Serif（源ノ明朝）</option>
                                     <option value="HGMin">HG明朝</option>
                                     <option value="HeiseiMin">平成明朝</option>
-                                    <option value="MSMin">MS 明朝</option>
+                                    <option value="MSMin">ＭＳ 明朝</option>
                                 </optgroup>
                                 <optgroup label="教科書体">
                                     <option value="UDKyo">UDデジタル教科書体</option>
@@ -179,7 +179,7 @@
                                         </div>
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" id="combineEndBracket" class="custom-control-input cell-option-toggle"/>
-                                            <label for="combineEndBracket" class="custom-control-label">句読点＋括弧の文字詰め</label>
+                                            <label for="combineEndBracket" class="custom-control-label">句読点＋括弧の詰め組</label>
                                         </div>
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" id="tatechuyoko" class="custom-control-input cell-option-toggle"/>
@@ -191,9 +191,24 @@
                                         </div>
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" id="combineRomanSentence" class="custom-control-input cell-option-toggle"/>
-                                            <label for="combineRomanSentence" class="custom-control-label">半角欧文の詰め書き</label>
+                                            <label for="combineRomanSentence" class="custom-control-label">半角欧文の詰め組</label>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="drawer-item">
+                        <div class="card">
+                            <div class="row no-gutters">
+                                <div class="col-0 card-horizontal-header">
+                                    選択範囲スタイル
+                                </div>
+                                <div id="selectionStyle" class="col card-horizontal-body">
+                                    <div class="selection-style-type">デフォルト</div>
+                                    <div id="selectionStyleDefault"></div>
+                                    <div class="selection-style-type">マーカー</div>
+                                    <div id="selectionStyleMarker"></div>
                                 </div>
                             </div>
                         </div>
@@ -311,6 +326,12 @@
                         </article>
                         <article>
                             <h2>更新履歴</h2>
+                            <h3>１・１・０ ― <span class="tc">’24</span>年３月<span class="tc">30</span>日</h3>
+                            <ul>
+                                <li>選択範囲のスタイル変更機能。マーカー風が選択できるように</li>
+                                <li>『。」』等の詰め組が游明朝など一部フォントで崩れてしまうのを修正</li>
+                                <li>濁点、半濁点付きの変体仮名が分離してしまうのを修正</li>
+                            </ul>
                             <h3>１・０・０ ― <span class="tc">’21</span>年７月<span class="tc">15</span>日</h3>
                             <p>初リリース</p>
                         </article>

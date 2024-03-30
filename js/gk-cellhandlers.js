@@ -18,6 +18,7 @@ export class CellHandler {
             new HalfwidthSpaceVisible(genko),
             new EndBracket(genko),
             new EndOfLine(genko),
+            new HirakanaCombined(genko),
             new PassThrough(genko)
         ];
     }
@@ -127,7 +128,7 @@ class Tatechuyoko2Digits extends CellHandler {
     }
 
     matches(idx, chars, genko) {
-        let prevCell = genko.$charCells[idx - 1];
+        let prevCell = genko.charCells[idx - 1];
         return this.regex1.test(chars.get(2)) && (!prevCell || !(prevCell.hasClass("ascii-combined") || prevCell.hasClass("odd-space")));
     }
 
@@ -180,7 +181,7 @@ class RomanSentence extends CellHandler {
     }
 
     matches(idx, chars, genko) {
-        let $prev = genko.$charCells[idx - 1];
+        let $prev = genko.charCells[idx - 1];
         if ($prev && $prev.hasClass("ascii-combined") || !this.options().tatechuyoko
                 || this.options().tatechuyoko && !this.regexDigit.test(chars.get(3))) {
             return this.regexAscii.test(chars.get(2));
@@ -226,8 +227,8 @@ class RomanSentenceOddFragment extends CellHandler {
     }
 
     matches(idx, chars, genko) {
-        return idx > 1 && genko.$charCells[idx - 1]
-                && genko.$charCells[idx - 1].hasClass("ascii-combined")
+        return idx > 1 && genko.charCells[idx - 1]
+                && genko.charCells[idx - 1].hasClass("ascii-combined")
                 && this.regex1.test(chars.get(1)) && this.regex2.test(chars.get(2));
     }
 
@@ -235,6 +236,27 @@ class RomanSentenceOddFragment extends CellHandler {
         cell.addClass("odd-space").text(chars.get(1));
         return 1;
     }
+}
+
+class HirakanaCombined extends CellHandler {
+    constructor(genko) {
+        super(genko);
+        this.regex = /[ぁ-ゖァ-ヺ\u{1B000}-\u{1B11F}][\u3099\u309A]/u;
+    }
+
+    isEnabled() {
+        return true;
+    }
+
+    matches(idx, chars, genko) {
+        return this.regex.test(chars.get(1));
+    }
+
+    apply(cell, idx, chars, genko) {
+        cell.addClass("hirakana-combined").text(chars.get(1))
+        return 1;
+    }
+
 }
 
 class EndBracket extends CellHandler {
@@ -262,6 +284,7 @@ class EndOfLine extends CellHandler {
         super(genko);
         this.regex1 = /(.|[\u0020-\u052f]{2})[、。，．,.)\]}>'"’”»›」』）｝】＞≫〕］〉》〙〛]/u;
         this.regex2 = /.([、。，．,.)\]}>'"’”»›」』）｝】＞≫〕］〉》〙〛]{2,})/u;
+        this.regexHirakana = /[ぁ-ゖァ-ヺ\u{1B000}-\u{1B11F}][\u3099\u309A]/u;
     }
 
     isEnabled() {
@@ -273,15 +296,24 @@ class EndOfLine extends CellHandler {
     }
 
     apply(cell, idx, chars, genko) {
-        cell.addClass("char-combined");
-
+        cell.empty();
         let matches = chars.get(3).match(this.regex2);
         if (matches) {
-            cell.text(chars.get(1));
-            cell.append($("<span>").text(matches[1]));
+            if (chars.get(1).match(this.regexHirakana)) {
+                cell.append($("<span>", {class: "hirakana-combined"}).text(chars.get(1)));
+            } else {
+                cell.text(chars.get(1));
+            }
+            cell.append($("<span>", {class: "char-combined"}).text(matches[1]));
             return 3;
         } else {
-            cell.text(chars.get(2));
+            let subChars = new Unistring(chars.get(2));
+            if (subChars.clusterAt(0).match(this.regexHirakana)) {
+                cell.append($("<span>", {class: "hirakana-combined"}).text(subChars.clusterAt(0)));
+            } else {
+                cell.text(subChars.clusterAt(0));
+            }
+            cell.append($("<span>", {class: "char-combined"}).text(subChars.clusterAt(1)));
             return 2;
         }
     }

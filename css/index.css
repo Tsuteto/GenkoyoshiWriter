@@ -288,6 +288,17 @@
         padding: .375rem .75rem;
     }
 
+    .drawer .card .selection-style-type {
+        background-color: #e9ecef;
+        margin: .375rem -.75rem;
+        padding: 0.2rem .75rem;
+        font-size: 0.8em;
+    }
+
+    .drawer .card .selection-style-type:first-child {
+        margin-top: -.375rem;
+    }
+
     /* Size preset */
     .size-preset {
         display: flex;
@@ -298,12 +309,14 @@
     }
 
     /* Color palette */
-    #colorPalette .btn {
+    #colorPalette .btn,
+    #selectionStyle .btn {
         padding: .25rem;
         border-radius: .2rem;
         margin: 2px;
     }
-    #colorPalette .color-indicator {
+    #colorPalette .color-indicator,
+    #selectionStyle .color-indicator {
         height: 15px;
         width: 30px;
         border: 1px solid white;

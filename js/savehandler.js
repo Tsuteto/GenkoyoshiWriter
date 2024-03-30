@@ -1,20 +1,28 @@
+import { GenkoYoshi } from "./genkoyoshi.js";
+
 export class SaveHandler {
 
+    /**
+     * @param {Main} main 
+     */
     constructor(main) {
+        /** @type {GenkoYoshi} */
         this.genko = main.genko;
+        /** @type {Object} */
         this.settings = main.settings.params;
     }
 
     save() {
         var data = {
-            rev: 1,
+            rev: 2,
             genkoSettings: {
                 colSize: this.genko.colSize,
                 rowSize: this.genko.rowSize,
                 featuringColor: this.genko.featuringColor,
                 featuringFont: this.genko.featuringFont,
                 featuringFontRoman: this.genko.featuringFontRoman,
-                cellOptions: this.genko.cellOptions
+                cellOptions: this.genko.cellOptions,
+                selectionStyle: this.genko.selectionStyle,
             },
             genkoText: this.genko.text.getText().toString(),
             appSettings: {

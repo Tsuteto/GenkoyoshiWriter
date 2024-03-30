@@ -6,6 +6,12 @@ import { CellHandler } from "./gk-cellhandlers.js";
  */
 
 /**
+ * @typedef {Object} SelectionStyle
+ * @property {string} type
+ * @property {string | null} color
+ */
+
+/**
  * @typedef {Object} Options
  * @property {boolean} newlineVisible
  * @property {boolean} halfwidthSpaceVisible
@@ -27,9 +33,11 @@ export class GenkoYoshi {
      * @param {number} col 
      * @param {number} row 
      */
-    constructor($container, col, row) {
+    constructor($element, col, row) {
         /** @type {JQuery} */
-        this.$container = $container;
+        this.$element = $element;
+        /** @type {JQuery} */
+        this.$container = $("<div>", {class: "genko-container"});
         /** @type {number} */
         this.colSize = col;
         /** @type {number} */
@@ -52,10 +60,13 @@ export class GenkoYoshi {
             combineEndOfLine: true,
             combineEndBracket: true,
         };
+        /** @type {SelectionStyle} */
+        this.selectionStyle = GenkoYoshi.SELECTION_STYLE.default;
 
         /** @type {string} */
         this.browser = (/(msie|trident|edge|chrome|safari|firefox|opera)/
                 .exec(window.navigator.userAgent.toLowerCase()) || ["other"]).pop().replace("trident", "msie");
+        this.isMobile = "ontouchstart" in window;
 
         /** @type {UndoManager} */
         this.undoMgr = new UndoManager(this);
@@ -72,7 +83,7 @@ export class GenkoYoshi {
         /** @type {Object.<number, JQuery>} */
         this.$pages = {};
         /** @type {Object.<number, TextCell>} */
-        this.$charCells = {};
+        this.charCells = {};
         /** @type {Object.<number, JQuery>} */
         this.$rubyCells = {};
         /** @type {Object.<number, TextCell>} */
@@ -99,18 +110,23 @@ export class GenkoYoshi {
     init() {
         return new Promise((resolve, reject) => {
             /** @type {TextCell} */
-            this.$charCells = {};
+            this.charCells = {};
             this.$rubyCells = {};
 
+            this.$container.appendTo(this.$element);
             this.$colorCss = $("<style>");
             this.$colorCss.appendTo($("head"));
             this.$fontCss = $("<style>");
             this.$fontCss.appendTo($("head"));
+            this.$selColorCss = $("<style>");
+            this.$selColorCss.appendTo($("head"));
             this.setColor(this.featuringColor);
             this.setFont(this.featuringFont);
             this.inputMgr.applyCellOptions(this.cellOptions);
+            this.setSelectionStyle(this.selectionStyle);
 
             setTimeout(() => {
+                this.setupContainer();
                 this.addPage(0);
                 this.measureMarginTop();
                 this.updateText();
@@ -170,32 +186,57 @@ export class GenkoYoshi {
         this.updateFont();
     }
 
+    setSelectionStyle(style) {
+        // Clear old selection style
+        let range = this.selectState.getUpdateRange();
+        for (let charPos = range.start; charPos < range.end; charPos++) {
+            let cell = this.charPosMap[charPos];
+            if (this.selectionStyle.type === "marker") {
+                cell.$marker.removeClass("selected");
+            } else {
+                cell.$body.removeClass("selected");
+            }
+        }
+
+        // Set new one
+        this.$selColorCss.html(`:root {--sel-style-color: ${style.color};}`);
+        this.selectionStyle = style;
+        this.setupContainer();
+        if (this.selectState.isSelecting) {
+            this.updateTextSelection();
+        }
+    }
+
     updateFont() {
         let fontfamily = [];
         if (GenkoYoshi.FONTS_ROMAN[this.featuringFontRoman]) {
             fontfamily.push(GenkoYoshi.FONTS_ROMAN[this.featuringFontRoman]);
         }
         fontfamily.push(GenkoYoshi.FONTS[this.featuringFont]);
-        this.$fontCss.html(`.genko-body {font-family: ${fontfamily.join(", ")}, "gk-HentaiganaMincho", serif`);
+        this.$fontCss.html(`.genko-body {font-family: ${fontfamily.join(", ")}, "gk-HentaiganaMincho", serif;}`);
 //        "UniHentaiKana","IPAmjMincho","HanaMinA","WadaLabChuMaruGo2004Emoji","WadaLabMaruGo2004Emoji",serif;}`);
     }
 
     setCellOption(name, bool) {
         this.cellOptions[name] = bool;
         this.updateText();
-        this.$container.find(".genko-paper")
-                .toggleClass("newline-visible", this.cellOptions.newlineVisible)
-                .toggleClass("fw-space-visible", this.cellOptions.fullwidthSpaceVisible)
-                .toggleClass("hw-space-visible", this.cellOptions.halfwidthSpaceVisible);
+        this.setupContainer();
         this.inputMgr.applyCellOptions(this.cellOptions);
     }
 
-    buildPage(pageNum) {
-        let $paper = $(`<div class="genko-paper browser-${this.browser}">`)
-                .data("page", pageNum)
+    setupContainer() {
+        this.$container
+                .attr("class", "")
+                .addClass(`genko-container browser-${this.browser} selection-style-${this.selectionStyle.type}`)
                 .toggleClass("newline-visible", this.cellOptions.newlineVisible)
                 .toggleClass("fw-space-visible", this.cellOptions.fullwidthSpaceVisible)
                 .toggleClass("hw-space-visible", this.cellOptions.halfwidthSpaceVisible)
+                .toggleClass("sideways-roman", this.cellOptions.sidewaysRoman);
+    }
+
+    buildPage(pageNum) {
+        let $paper = $(`<div class="genko-paper">`)
+                .data("page", pageNum)
                 .mouseup(this.onCharMouseup.bind(this));
         let $genko = $("<div class='genko-body'>");
         let $inner = $("<div class='inner'>");
@@ -235,19 +276,19 @@ export class GenkoYoshi {
             let $charWrapper = $("<div>");
 
             let $rubyWrapper = $("<div>")
-                .data("pos", cellPos)
-                .click(this.onRubyClicked.bind(this));
+                    .data("pos", cellPos)
+                    .click(this.onRubyClicked.bind(this));
+
+            let $markerBody = $("<div class='marker-body'>")
 
             $charRuby.append($rubyWrapper);
             $charBody.append($charWrapper);
-            $charRow.append($charBody).append($charRuby);
+            $charRow.append($charBody).append($charRuby).append($markerBody);
             $col.append($charRow);
-
-            //$charBody.append($(`<div id="charpos-${cellPos}" class="test-tip">`));
 
             let cell = new TextCell(cellPos, $charWrapper).setLinehead(c == 0);
 
-            this.$charCells[cellPos] = cell;
+            this.charCells[cellPos] = cell;
             this.$rubyCells[cellPos] = $rubyWrapper;
             this.cellPosMap[cellPos] = cell;
         }
@@ -293,9 +334,11 @@ export class GenkoYoshi {
         /** @type {Array<TextCell>} */
         let queueForNext = [];
 
-        while ((cell = this.$charCells[cellIdx]) != null) {
+        while ((cell = this.charCells[cellIdx]) != null) {
 
             cell.attr("class", "");
+            cell.$row.attr("class", "char-row");
+            cell.$marker.removeClass("selected");
 
             if (cellIdx % this.colSize == 0) {
                 newline = false;
@@ -310,6 +353,7 @@ export class GenkoYoshi {
                     // New line
                     newline = true;
                     cell.addClass("newline").text("");
+                    cell.$row.addClass("newline");
                 } else {
                     /*
                     * Character combine logic
@@ -344,14 +388,7 @@ export class GenkoYoshi {
                     charPos++;
                 }
 
-                cell.setPrevCell(prevCell);
-                if (prevCell) {
-                    prevCell.setNextCell(cell);
-                    let c;
-                    while ((c = queueForNext.pop()) != null) {
-                        c.setNextCell(cell);
-                    }
-                }
+                setPrevAndNextCell(cell, prevCell);
                 prevCell = cell;
             } else {
                 cell.text("");
@@ -382,9 +419,18 @@ export class GenkoYoshi {
             this.$pages[pageIdx].toggleClass("blank", this.lastCellIdx < this.rowSize * this.colSize * +pageIdx - 1);
         }
 
-        this.$container.find(".genko-paper").toggleClass("sideways-roman", this.cellOptions.sidewaysRoman);
-
         return this;
+
+        function setPrevAndNextCell(cell, prevCell) {
+            cell.setPrevCell(prevCell);
+            if (prevCell) {
+                prevCell.setNextCell(cell);
+                let c;
+                while ((c = queueForNext.pop()) != null) {
+                    c.setNextCell(cell);
+                }
+            }
+        }
     }
 
     updateTextSelection() {
@@ -397,16 +443,22 @@ export class GenkoYoshi {
         }
         for (let charPos = range.start; charPos < range.end; charPos++) {
             let cell = this.charPosMap[charPos];
-            cell.toggleClass("selected", this.selectState.isSelected(charPos));
+            let selected = this.selectState.isSelected(charPos);
+            if (this.selectionStyle.type === "marker") {
+                cell.$marker.toggleClass("selected", selected);
+            } else {
+                cell.$body.toggleClass("selected", selected);
+            }
         }
         this.inputMgr.updateCaret();
     }
 
     refresh() {
-        this.$charCells = {};
+        this.charCells = {};
         this.$rubyCells = {};
         this.currPages = 0;
         this.$container.find(".genko-paper").remove();
+        this.setupContainer();
         this.addPage(0);
         this.updateText();
         this.updateTextSelection();
@@ -469,10 +521,11 @@ export class GenkoYoshi {
     }
 
     getPosClicked(e) {
+        let $target = $(e.currentTarget);
         /** @type {TextCell} */
-        let cell = $(e.currentTarget).find(".char-body div").data("cell");
+        let cell = $target.find(".char-body div").data("cell");
         let pos = cell.charPos;
-        let mpos = e.offsetY / cell.$elem.height();
+        let mpos = e.offsetY / cell.$body.height();
         return cell.isBlank ? pos : (mpos > 0.6 ? pos + 1 : pos);
     }
 
@@ -543,7 +596,10 @@ export class TextCell {
         /** @type {number} */
         this.pos = pos;
         /** @type {JQuery} */
-        this.$elem = $elem.data("cell", this);
+        this.$body = $elem.data("cell", this);
+        /** @type {JQuery} */
+        this.$row = $elem.parents(".char-row");
+        this.$marker = $elem.parent().parent().find(".marker-body");
         /** @type {boolean} */
         this.isBlank = true;
         this.charPos = 0;
@@ -565,28 +621,32 @@ export class TextCell {
     }
 
     text(text) {
-        this.$elem.text(text);
+        this.$body.text(text);
         return this;
     }
     attr(k, v) {
-        this.$elem.attr(k, v);
+        this.$body.attr(k, v);
         return this;
     }
     addClass(k) {
-        this.$elem.addClass(k);
+        this.$body.addClass(k);
         return this;
     }
     toggleClass(k, c) {
-        this.$elem.toggleClass(k, c);
+        this.$body.toggleClass(k, c);
         return this;
     }
     hasClass(c) {
-        return this.$elem.hasClass(c);
+        return this.$body.hasClass(c);
     }
 
     append(e) {
-        this.$elem.append(e);
+        this.$body.append(e);
         return this;
+    }
+
+    empty() {
+        this.$body.empty();
     }
 
     setCharPos(pos) {
@@ -1097,12 +1157,12 @@ class InputManager {
         if (cell.hasClass("combined") && cell.pos != pos) {
             cell = cell.nextCell;
         }
-        var caretOffset = cell.$elem.offset();
+        var caretOffset = cell.$body.offset();
         this.$caret.offset(caretOffset);
         this.setImePosition();
 
         // Adjust the paper position where the caret is in to the center of screen
-        let scrollTo = cell.$elem.closest(".genko-paper").offset().top - this.genko.paperMerginTop;
+        let scrollTo = cell.$body.closest(".genko-paper").offset().top - this.genko.paperMerginTop;
         if (Math.abs($("html").scrollTop() - scrollTo) > this.genko.paperMerginTop) {
             $("html:not(:animated)").animate({scrollTop: scrollTo}, 300);
         }
@@ -1112,12 +1172,12 @@ class InputManager {
         let pos = this.text.selectionEnd;
         /** @type {TextCell} */
         let cell = this.genko.charPosMap[pos];
-        let inputOffset = cell.$elem.offset();
+        let inputOffset = cell.$body.offset();
         inputOffset.top += 0;
         if (this.genko.cellOptions.verticalImeInput) {
             inputOffset.left -= this.$imeFld.outerWidth() + 5;
         } else {
-            inputOffset.left += cell.$elem.outerWidth() + 5;
+            inputOffset.left += cell.$body.outerWidth() + 5;
         }
         this.$imeFld.offset(inputOffset);
     }
@@ -1161,6 +1221,67 @@ GenkoYoshi.COLOR_PALETTE = [
     "#acacac", // gray
     "#202020" // black
 ];
+
+/** @type {Object.<string, SelectionStyle>}} */
+GenkoYoshi.SELECTION_STYLE = {
+    default: {
+        type: "default",
+        color: "Highlight"
+    },
+    m_red: {
+        type: "marker",
+        color: "#ff7878"
+    },
+    m_orange: {
+        type: "marker",
+        color: "#ff983d"
+    },
+    m_yellow: {
+        type: "marker",
+        color: "#ffdd22"
+    },
+    m_green: {
+        type: "marker",
+        color: "#99ff00"
+    },
+    m_emerald: {
+        type: "marker",
+        color: "#00ffa0"
+    },
+    m_cyan: {
+        type: "marker",
+        color: "#33ccff"
+    },
+    m_blue: {
+        type: "marker",
+        color: "#adadff"
+    },
+    m_violet: {
+        type: "marker",
+        color: "#c59cff"
+    },
+    m_purple: {
+        type: "marker",
+        color: "#f088f0"
+    },
+    m_pink: {
+        type: "marker",
+        color: "#ffbfeb"
+    },
+    m_brown: {
+        type: "marker",
+        color: "#cfaaa3"
+    },
+    m_ice: {
+        type: "marker",
+        color: "#a3cbcf"
+    },
+    m_gray: {
+        type: "marker",
+        color: "#bfbfbf"
+    },
+};
+
 
 /** @type {Object.<string,string>} */
 GenkoYoshi.FONTS = {
