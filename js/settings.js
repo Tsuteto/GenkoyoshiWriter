@@ -82,6 +82,11 @@ export class Settings {
                 .click(this.onSelectionColorChanged.bind(this))
         ).forEach($btn => $btn.appendTo(this.$selectionStyleColors));
 
+        const isDefault = this.$selectionStyleType.val() === "default";
+        this.$selectionStyleColors.find("button")
+            .attr("inert", isDefault ? "inert" : null)
+            .toggleClass("disabled", isDefault);
+
         return this;
     }
 
