@@ -14,10 +14,8 @@ export class Settings {
         this.$lightColorRange = this.$body.find("#lightColor");
         this.$colorPalette = this.$body.find("#colorPalette");
         this.$wallpaper = this.$body.find("#wallpaper");
-        this.$selectionStyle = {
-            default: this.$body.find("#selectionStyleDefault"),
-            marker: this.$body.find("#selectionStyleMarker")
-        };
+        this.$selectionStyleType = this.$body.find("#selectionStyleType");
+        this.$selectionStyleColors = this.$body.find("#selectionStyleColors");
 
         this.params = {
             lightColor: 1,
@@ -75,16 +73,14 @@ export class Settings {
         this.main.setLightColor(this.params.lightColor);
         this.main.setWallpaper(this.params.wallpaper);
 
-        for (let key in GenkoYoshi.SELECTION_STYLE) {
-            let style = GenkoYoshi.SELECTION_STYLE[key];
+        this.$selectionStyleType.val(this.genko.selectionStyle.type).change(this.onSelectionStyleChanged.bind(this))
+        GenkoYoshi.SELECTION_COLOR_PALETTE.map(color =>
             $("<button class='btn btn-outline-secondary'>")
-                .append($("<div class='color-indicator'>").css("background-color", style.color))
-                .toggleClass("active", style.color === this.genko.selectionStyle.color
-                        && style.type === this.genko.selectionStyle.type)
-                .data("style", style)
-                .click(this.onSelectionStyleChanged.bind(this))
-                .appendTo(this.$selectionStyle[style.type])
-        }
+                .append($("<div class='color-indicator'>").css("background-color", color))
+                .toggleClass("active", color === this.genko.selectionStyle.color)
+                .data("color", color)
+                .click(this.onSelectionColorChanged.bind(this))
+        ).forEach($btn => $btn.appendTo(this.$selectionStyleColors));
 
         return this;
     }
@@ -151,10 +147,24 @@ export class Settings {
     }
 
     onSelectionStyleChanged(e) {
-        let style = $(e.target).data("style");
-        this.genko.setSelectionStyle(style);
-        $("#selectionStyle").find(".btn").each((i, btn) => {
-            $(btn).toggleClass("active", $(btn).data("style") === style);
+        const type = this.$selectionStyleType.val();
+        const color = this.$selectionStyleColors.find(".active").data("color") ?? GenkoYoshi.SELECTION_COLOR_PALETTE[0];
+        this.genko.setSelectionStyle({type, color});
+
+        const isDefault = type === "default";
+        this.$selectionStyleColors.find("button")
+            .attr("inert", isDefault ? "inert" : null)
+            .toggleClass("disabled", isDefault);
+    }
+
+    onSelectionColorChanged(e) {
+        const $target = $(e.target);
+        const type = this.$selectionStyleType.val();
+        const color = $target.data("color");
+        this.genko.setSelectionStyle({type, color});
+
+        $("#selectionStyleColors").find(".btn").each((i, btn) => {
+            $(btn).toggleClass("active", $(btn).data("color") === color);
         });
     }
 

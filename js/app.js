@@ -33,11 +33,10 @@ class Main {
         this.$dialogExport.find(".btn-okay").click(this.onExportTextConfirmed.bind(this));
 
         // Export as image
-        this.$exportImageBtn = $("#export-image").click(this.onExportImageWholeClicked.bind(this));
-        //this.$exportImageBtn = $("#export-image").click(this.onExportImageClicked.bind(this));
+        this.$exportImageBtn = $("#export-image").click(this.onExportImageClicked.bind(this));
         this.$dialogExportImage = $("#dialog-export-image").modal({show: false});
-        this.$dialogExportImage.find(".btn-each").click(this.onExportImageEachPageClicked.bind(this));
-        this.$dialogExportImage.find(".btn-whole").click(this.onExportImageWholeClicked.bind(this));
+        this.$dialogExportImage.find("#btn-export-image").click(this.onExportImageConfirmed.bind(this));
+        $(".btn-image-export-mode input").change(this.updateExportImageMode.bind(this));
 
         // Twitter share button
         $("#share-twitter").click(this.onShareTwitterClicked.bind(this));
@@ -139,20 +138,41 @@ class Main {
 
     onExportImageClicked(e) {
         this.$dialogExportImage.modal("show");
+        this.updateExportImageMode();
     }
+    
+    onExportImageConfirmed(e) {
+        const $pages = this.getPages();
+        const isSinglePage = $pages.length == 1;
+        const isAllInOne = $("#imageExportAllInOne").is(":checked") || isSinglePage;
+        const funcExportAsImage = isAllInOne ? this.exportAsImage : this.exportAsImageEachPage;
 
-    onExportImageWholeClicked(e) {
         this.$dialogExportImage.modal("hide");
         this.startProcessing("backdrop-export-image")
-            .then(this.exportAsImage.bind(this))
+            .then(funcExportAsImage.bind(this))
             .then(this.endProcessing.bind(this));
     }
 
-    onExportImageEachPageClicked(e) {
-        this.$dialogExportImage.modal("hide");
-        this.startProcessing("backdrop-export-image")
-            .then(this.exportAsImageEachPage.bind(this))
-            .then(this.endProcessing.bind(this));
+    updateExportImageMode() {
+        const $pages = this.getPages();
+        const isSinglePage = $pages.length == 1;
+        const isAllInOne = $("#imageExportAllInOne").is(":checked");
+        let postfix;
+
+        $(".btn-image-export-mode")
+            .toggleClass("disabled", isSinglePage)
+            .toggleClass("btn-outline-primary", !isSinglePage)
+            .toggleClass("btn-outline-secondary", isSinglePage)
+            .attr("inert", isSinglePage ? "inert" : null);
+
+        if (isAllInOne || isSinglePage) {
+            postfix = ".png";
+            $("#imageFilePagingDesc").hide();
+        } else {
+            postfix = "-<i>ページ数</i>.png";
+            $("#imageFilePagingDesc").show();
+        }
+        $("#image-filename-postfix").html(postfix);
     }
 
     exportAsImage() {
@@ -171,8 +191,8 @@ class Main {
                 ignoreElements: elem => $(elem).is(".genko-ime, .genko-caret"),
                 onclone: (doc) => {
                     $(doc).find(".genko-paper").css({"box-shadow": "none"}).removeClass("newline-visible");
-                    $(doc).find(".fw-space").text("");
-                    $(doc).find(".newline, .hw-space.single").text("");
+                    $(doc).find(".char-body:has(.fw-space)").html("<div/>");
+                    $(doc).find(".char-body:has(.newline), .char-body:has(.hw-space.single)").html("<div/>");
                     $(doc).find(".newline-after").each((idx, e) => {
                         $(e).text($(e).text());
                     });
@@ -184,64 +204,67 @@ class Main {
                     })
                 }
             }).then(canvas => {
-                //$("body").append(canvas);
+                // $("body").append(canvas); // Output image on screen for debugging
                 $("body").css({"padding": ""});
                 $(".genko").css({"padding": "", "margin": "", "justify-content": "", "width": ""});
                 $(".genko-body").css({"margin": ""});
                 $(".genko-paper").css({"margin": ""});
                 $(".genko-paper.blank").show();
-                var text = this.genko.getText();
                 var link = document.createElement("a");
                 var url = canvas.toDataURL();
+                var filename = $("#export-image-filename").val() + ".png"
                 link.href = url;
-                link.download = "genkoyoshi.png";
+                link.download = filename;
                 link.click();
                 $(() => resolve())
             });
         });
     }
 
-    exportAsImageEachPage() {
-        return new Promise((resolve, reject) => {
-            let $pages = $(".genko-paper:not(.blank)");
-            $("body").css({"padding": "0"});
-            $(".genko").css({"gap": "10mm", "padding": "10mm", "margin": "0", "justify-content": "left", "width": "min-content"});
-            $(".genko-body").css({"margin": "0"});
-            console.log("before map");
-            $pages.map((idx, page) => {
-                (async () => {
-                    $pages.hide();
-                    $(page).show();
-                    console.log("before await");
-                    await html2canvas(page, {
-                        foreignObjectRendering: this.browser != "safari",
-                        onclone: (doc) => {
-                            $(doc).find(".genko-paper").css({"box-shadow": "none", "margin": "0"});
-                            $(doc).find(".genko-body").css({"margin": "5mm"});
-                            $(doc).find(".genko-ime").remove();
-                            $(doc).find(".genko-caret").remove();
-                            $(doc).find(".newline, .fw-space, .hw-space").removeClass("visible").text("");
-                        }
-                    }).then(canvas => {
-                        console.log("-> then");
-                        var text = this.genko.getText();
-                        var link = document.createElement("a");
-                        var url = canvas.toDataURL();
-                        link.href = url;
-                        link.download = "genkoyoshi.png";
-                        link.click();
-                    });
-                    console.log("after page");
-                })();
-                console.log("after async");
-            });
-            console.log("after map");
+    async exportAsImageEachPage() {
+        let $pages = this.getPages();
+        $(document).scrollTop(0);
+        $("body").css({"padding": "0"});
+        $(".genko").css({"padding": "5mm", "margin": "0", "justify-content": "left", "width": "min-content"});
+        $(".genko-body").css({"margin": "0"});
+        $(".genko-paper").css({"margin": "5mm"});
+        $(".genko-paper.blank").hide();
+        try {
+            for (const [idx, page] of $pages.toArray().entries()) {
+                $pages.hide();
+                $(page).show();
+                const canvas = await html2canvas(document.querySelector(".genko"), {
+                    foreignObjectRendering: this.browser != "safari",
+                    onclone: (doc) => {
+                        $(doc).find(".genko-paper").css({"box-shadow": "none"}).removeClass("newline-visible");
+                        $(doc).find(".char-body:has(.fw-space)").html("<div/>");
+                        $(doc).find(".char-body:has(.newline), .char-body:has(.hw-space.single)").html("<div/>");
+                        $(doc).find(".newline-after").each((idx, e) => {
+                            $(e).text($(e).text());
+                        });
+                        $(doc).find(".hw-space.after").each((idx, e) => {
+                            $(e).text($(e).text() + "\xa0");
+                        })
+                        $(doc).find(".hw-space.before").each((idx, e) => {
+                            $(e).text("\xa0" + $(e).text());
+                        })
+                    }
+                });
+                var link = document.createElement("a");
+                var url = canvas.toDataURL();
+                var filename = $("#export-image-filename").val() + `-${(idx + 1).toString().padStart(2, "0")}.png`
+                link.href = url;
+                link.download = filename;
+                link.click();
+            }
+        } finally {
             $pages.show();
             $("body").css({"padding": ""});
-            $(".genko").css({"gap": "", "padding": "", "margin": "", "justify-content": "", "width": ""});
+            $(".genko").css({"padding": "", "margin": "", "justify-content": "", "width": ""});
             $(".genko-body").css({"margin": ""});
-            $(() => resolve());
-        });
+            $(".genko-paper").css({"margin": ""});
+            $(".genko-paper.blank").show();
+        }
     }
 
     onShareTwitterClicked(e) {
@@ -277,6 +300,10 @@ class Main {
 
     onClosing() {
         this.saveHandler.save();
+    }
+
+    getPages() {
+        return $(".genko-paper:not(.blank)");
     }
 }
 

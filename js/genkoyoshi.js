@@ -61,7 +61,10 @@ export class GenkoYoshi {
             combineEndBracket: true,
         };
         /** @type {SelectionStyle} */
-        this.selectionStyle = GenkoYoshi.SELECTION_STYLE.default;
+        this.selectionStyle = {
+            type: "default",
+            color: GenkoYoshi.SELECTION_COLOR_PALETTE[0]
+        };
 
         /** @type {string} */
         this.browser = (/(msie|trident|edge|chrome|safari|firefox|opera)/
@@ -444,7 +447,7 @@ export class GenkoYoshi {
         for (let charPos = range.start; charPos < range.end; charPos++) {
             let cell = this.charPosMap[charPos];
             let selected = this.selectState.isSelected(charPos);
-            if (this.selectionStyle.type === "marker") {
+            if (this.selectionStyle.type.indexOf("marker") == 0) {
                 cell.$marker.toggleClass("selected", selected);
             } else {
                 cell.$body.toggleClass("selected", selected);
@@ -1281,6 +1284,23 @@ GenkoYoshi.SELECTION_STYLE = {
         color: "#bfbfbf"
     },
 };
+
+/** @type {string[]} */
+GenkoYoshi.SELECTION_COLOR_PALETTE = [
+    "#ff7878",
+    "#ff983d",
+    "#ffdd22",
+    "#99ff00",
+    "#00ffa0",
+    "#33ccff",
+    "#adadff",
+    "#c59cff",
+    "#f088f0",
+    "#ffbfeb",
+    "#cfaaa3",
+    "#a3cbcf",
+    "#bfbfbf",
+];
 
 
 /** @type {Object.<string,string>} */

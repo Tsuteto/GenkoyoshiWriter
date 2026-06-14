@@ -323,6 +323,10 @@
         pointer-events: none;
     }
 
+    .btn.disabled .color-indicator {
+        background-color: #ccc !important;
+    }
+
     /* 共有タブ */
     #sharePane {
         top: 120px;

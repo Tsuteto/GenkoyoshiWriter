@@ -23,7 +23,7 @@
         <div class="bg-desktop"></div>
         <div class="bg-shade"></div>
         <div class="bg-lighting"></div>
-        <header>原稿用紙ライター <span class="tc">Ver.</span>１・１・０</header>
+        <header>原稿用紙ライター <span class="tc">Ver.</span>１・２・０</header>
 
         <div class="genko"></div>
 
@@ -205,10 +205,16 @@
                                     選択範囲スタイル
                                 </div>
                                 <div id="selectionStyle" class="col card-horizontal-body">
-                                    <div class="selection-style-type">デフォルト</div>
-                                    <div id="selectionStyleDefault"></div>
-                                    <div class="selection-style-type">マーカー</div>
-                                    <div id="selectionStyleMarker"></div>
+                                    <div class="selection-style-type">スタイル</div>
+                                    <div>
+                                        <select id="selectionStyleType" class="form-control custom-select">
+                                            <option value="default">デフォルト</option>
+                                            <option value="marker">マーカー右</option>
+                                            <option value="marker-mid">マーカー中央</option>
+                                        </select>
+                                    </div>
+                                    <div class="selection-style-type">カラー</div>
+                                    <div id="selectionStyleColors"></div>
                                 </div>
                             </div>
                         </div>
@@ -231,10 +237,10 @@
                             <button id="share-twitter" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-twitter fa-2x"></i></div>Twitter</button>
                         </div>-->
                         <div class="drawer-item">
-                            <button id="export-image" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-picture-o fa-2x"></i></div>画像として出力</button>
+                            <button id="export-image" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-picture-o fa-2x"></i></div>画像として出力…</button>
                         </div>
                         <div class="drawer-item">
-                            <button id="export-text" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-file-text fa-2x"></i></div>テキストファイルとして出力</button>
+                            <button id="export-text" class="btn btn-block btn-outline-secondary"><div><i class="fa fa-file-text fa-2x"></i></div>テキストファイルとして出力…</button>
                         </div>
                     </div>
                 </div>
@@ -253,7 +259,8 @@
                         </article>
                         <article>
                             <h2>対応ブラウザ</h2>
-                            <ul><li>Google Chrome 61以降</li><li>Firefox 60以降</li><li>Safari Mac版10.1以降、iPad版10.3以降　※画像出力未対応</li><li>Edge 16以降</li></ul>
+                            <ul><li>Google Chrome 61以降</li><li>Safari Mac版10.1以降、iPad版10.3以降　※画像出力未対応</li><li>Edge 16以降</li></ul>
+                            <p>※Firefoxは罫線がうまく描画できません（実線となる上に太さが歪になります）。</p>
                         </article>
                         <article>
                             <h2>テキストの入力機能</h2>
@@ -263,7 +270,7 @@
                         <article>
                             <h2>テキストの保存</h2>
                             <p>保存は５分ごと、もしくはタブやウィンドウの画面を閉じた時に入力中の状態が<u>ブラウザ内に自動保存されます</u>。次に同じブラウザでこの画面を開いた際に前の状態から再開できます。</p>
-                            <p>注意として、他にこの画面を開いているタブがないことを確認してください。複数のタブでこの画面が開いているとそれぞれで保存内容を書き換え合ってしまいます。</p>
+                            <p>注意として、他にこの画面を開いているタブやウィンドウがないことを確認してください。それら複数でこの画面が開いているとそれぞれで保存内容を書き換え合ってしまいます。</p>
                             <p>他の文書を作成したい場合は共有タブの『テキストファイルとして出力』を行ってから、削除して新たな文書を入力してください。</p>
                         </article>
                         <article>
@@ -281,7 +288,8 @@
                         </article>
                         <article>
                             <h2>画像として出力</h2>
-                            <p>原稿が複数枚ある場合は縦一列に並んだ形で１枚の画像に出力されます。数枚程度の出力が最適です。枚数が大量の場合は罫線の表示がおかしくなる他、ブラウザにより画像サイズの限界があります。必要な場合は印刷機能よりＰＤＦの出力をお勧めします。</p>
+                            <p>原稿用紙部分を「全体で１ファイル」または「ページごと１ファイル」に画像を出力できます。</p>
+                            <p>「全体で１ファイル」では、原稿が複数枚ある場合は縦一列に並んだ形で１枚の画像に出力されます。数枚程度の出力が最適です。枚数が大量の場合は罫線の表示がおかしくなる他、ブラウザにより画像サイズの限界があります。その場合「ページごと１ファイル」を選択するか、印刷機能よりＰＤＦの出力をお勧めします。</p>
                             <p>残念ながらSafariは機能が不十分のためうまく出力できません（文字が縦書きにならない……）。</p>
                         </article>
                         <article>
@@ -326,13 +334,24 @@
                         </article>
                         <article>
                             <h2>更新履歴</h2>
-                            <h3>１・１・０ ― <span class="tc">’24</span>年３月<span class="tc">30</span>日</h3>
+                            <h3>１・２・０ ― <span class="tc">26</span>年６月<span class="tc">14</span>日</h3>
+                            <ul>
+                                <li>画像を「ページごと１ファイル」に出力する機能を追加</li>
+                                <li>出力する画像ファイルにファイル名を設定できるように</li>
+                                <li>選択範囲スタイルに「マーカー中央」を追加</li>
+                            </ul>
+                            <h3>１・１・１ ― <span class="tc">25</span>年５月<span class="tc">29</span>日</h3>
+                            <ul>
+                                <li>画像出力時に改行マスの罫線が消える不具合を修正</li>
+                                <li>Firefoxでの罫線表示を調整（ただし破線がうまく描画できないため実線表示に変更）</li>
+                            </ul>
+                            <h3>１・１・０ ― <span class="tc">24</span>年３月<span class="tc">30</span>日</h3>
                             <ul>
                                 <li>選択範囲のスタイル変更機能。マーカー風が選択できるように</li>
                                 <li>『。」』等の詰め組が游明朝など一部フォントで崩れてしまうのを修正</li>
                                 <li>濁点、半濁点付きの変体仮名が分離してしまうのを修正</li>
                             </ul>
-                            <h3>１・０・０ ― <span class="tc">’21</span>年７月<span class="tc">15</span>日</h3>
+                            <h3>１・０・０ ― <span class="tc">21</span>年７月<span class="tc">15</span>日</h3>
                             <p>初リリース</p>
                         </article>
                     </div>
@@ -365,7 +384,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">ファイル名</span>
                             </div>
-                            <input type="text" id="export-filename" class="form-control" value="無題.txt">
+                            <input type="text" id="export-text-filename" class="form-control" value="無題.txt">
                         </div>
                         <p class="note">※ファイルはブラウザで設定されたダウンロードフォルダに保存されます。</p>
                     </div>
@@ -384,12 +403,32 @@
                         <h5 class="modal-title">原稿画像出力</h5>
                     </div>
                     <div class="modal-body">
-                        <p>出力する方法を選んでください。</p>
+                        <div class="btn-group btn-group-toggle d-flex mb-3 justify-content-center" data-toggle="buttons">
+                            <label class="btn btn-outline-primary btn-image-export-mode active">
+                                <input type="radio" class="btn-check" name="imageExportMode" id="imageExportAllInOne" autocomplete="off" checked>
+                                全体で1ファイル
+                            </label>
+
+                            <label class="btn btn-outline-primary btn-image-export-mode">
+                                <input type="radio" class="btn-check" name="imageExportMode" id="imageExportSeparated" autocomplete="off">
+                                ページごと1ファイル
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">ファイル名</span>
+                            </div>
+                            <input type="text" id="export-image-filename" class="form-control" value="無題">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="image-filename-postfix"></span>
+                            </div>
+                        </div>
+                        <p class="note" id="imageFilePagingDesc"><i>ページ数</i>は「01」からの数字になります。</p>
+                        <p class="note">※ファイルはブラウザで設定されたダウンロードフォルダに保存されます。</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-cancel" data-dismiss="modal">キャンセル</button>
-                        <button type="button" class="btn btn-primary btn-each">ページごと1ファイル</button>
-                        <button type="button" class="btn btn-primary btn-whole">全体で1ファイル</button>
+                        <button type="button" id="btn-export-image" class="btn btn-primary">画像出力</button>
                     </div>
                 </div>
             </div>

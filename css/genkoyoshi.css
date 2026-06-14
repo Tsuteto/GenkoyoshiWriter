@@ -229,18 +229,18 @@
 
 .genko-container.browser-firefox .genko-body .col-container:not(:first-child) .char-row:not(:last-child) .char-body {
     background-image:
-        linear-gradient(to right, var(--grid-color), var(--grid-color) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid-color) , var(--grid-color) 1px, transparent 1px);
+        linear-gradient(to right, var(--grid-color)),
+        linear-gradient(to bottom, var(--grid-color));
 }
 .genko-container.browser-firefox .genko-body .col-container:first-child .char-row:not(:last-child) .char-body,
 .genko-container.browser-firefox .genko-body .center-container + .col-container .char-row:not(:last-child) .char-body {
-    background-image: linear-gradient(to right, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+    background-image: linear-gradient(to right, var(--grid-color));
 }
 .genko-container.browser-firefox .genko-body .col-container:not(:first-child) .char-row:last-child .char-body {
-    background-image: linear-gradient(to bottom, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+    background-image: linear-gradient(to bottom, var(--grid-color));
 }
 .genko-container.browser-firefox .genko-body .col-container .char-row .char-ruby {
-    background-image: linear-gradient(to bottom, var(--grid-color), var(--grid-color) 1px, transparent 1px);
+    background-image: linear-gradient(to bottom, var(--grid-color));
 }
 
 /* Cells */
@@ -283,6 +283,24 @@
         transparent,
         transparent 0.8em, var(--sel-style-color) 0.8em,
         var(--sel-style-color) 1.2em, transparent 1.2em,
+        transparent);
+    mix-blend-mode: multiply;
+}
+
+.genko-container.selection-style-marker-mid .genko-body .char-row .marker-body {
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+    height: 100%;
+    width: 100%;
+}
+
+.genko-container.selection-style-marker-mid:not(.newline-visible) .genko-body .char-row:not(.newline) .marker-body.selected,
+.genko-container.selection-style-marker-mid.newline-visible .genko-body .char-row .marker-body.selected {
+    background: linear-gradient(90deg,
+        transparent,
+        transparent 0.1em, var(--sel-style-color) 0.1em,
+        var(--sel-style-color) 1.1em, transparent 1.1em,
         transparent);
     mix-blend-mode: multiply;
 }
